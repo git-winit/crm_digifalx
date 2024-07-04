@@ -15,9 +15,9 @@ app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///crmdigifalx.db'
 app.config['MAIL_SERVER'] = 'smtp.gmail.com'
 app.config['MAIL_PORT'] = 587
 app.config['MAIL_USE_TLS'] = True
-app.config['MAIL_USERNAME'] = 'vinit.s.narkhede@gmail.com'
-app.config['MAIL_PASSWORD'] = 'roue qcyl wbyd heac'
-app.config['MAIL_DEFAULT_SENDER'] = 'vinit.s.narkhede@gmail.com'
+app.config['MAIL_USERNAME'] = 'digifalx.head@gmail.com'
+app.config['MAIL_PASSWORD'] = 'gggu ujvb teok zgnw'
+app.config['MAIL_DEFAULT_SENDER'] = 'digifalx.head@gmail.com'
 UPLOAD_FOLDER = 'static/profile_pics'
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif'}
 
@@ -29,8 +29,8 @@ login_manager.login_view = 'login'
 
 class User(db.Model, UserMixin):
     id = db.Column(db.Integer, primary_key=True)
-    username = db.Column(db.String(150), nullable=False, unique=True)
-    email = db.Column(db.String(150), nullable=False, unique=True)
+    username = db.Column(db.String(150), nullable=False)
+    email = db.Column(db.String(150), nullable=False)
     password = db.Column(db.String(150), nullable=False)
     role = db.Column(db.String(50), nullable=False)
     address = db.Column(db.String(200), nullable=True)
@@ -50,6 +50,8 @@ class Task(db.Model):
     status = db.Column(db.String(50), nullable=False, default='backlog')
     assignees = db.relationship('User', secondary='task_assignees', backref='tasks')
     observers = db.relationship('User', secondary='task_observers', backref='observed_tasks')
+    creator_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    creator = db.relationship('User', backref='created_tasks', foreign_keys=[creator_id])
 
 task_assignees = db.Table('task_assignees',
     db.Column('task_id', db.Integer, db.ForeignKey('task.id'), primary_key=True),
@@ -151,10 +153,51 @@ def send_task_notification(task, recipients):
         msg = Message(
             subject="New Task Assigned",
             recipients=[user.email],
-            body=f"You have been assigned a new task: {task.title}\nDescription: {task.description}\nStart Date: {task.start_date}\nEnd Date: {task.end_date}\nPriority: {task.priority}",
+            body=f"""
+                You have been assigned a new task:
+                Title: {task.title}
+                Description: {task.description}
+                Start Date: {task.start_date}
+                End Date: {task.end_date}
+                Priority: {task.priority}
+                Assigned by: {task.creator.username}
+            """,
             sender="no-reply@yourapp.com"
         )
         mail.send(msg)
+
+
+def send_updatedtask_notification(task, recipients):
+    from flask_mail import Message
+    from app import mail
+
+    for user in recipients:
+        msg = Message(
+            subject="Task Updated",
+            recipients=[user.email],
+            body=f"""
+                Task has been updated:
+                Title: {task.title}
+                Description: {task.description}
+                Start Date: {task.start_date}
+                End Date: {task.end_date}
+                Priority: {task.priority}
+                Assigned by: {task.creator.username}
+            """,
+            sender="no-reply@yourapp.com"
+        )
+        mail.send(msg)
+
+def lead_email(subject, recipients, body):
+    
+
+    msg = Message(
+        subject=subject,
+        recipients=recipients,
+        body=body,
+        sender="no-reply@yourapp.com"
+    )
+    mail.send(msg)
 
 
 
@@ -278,18 +321,22 @@ def edit_task(task_id):
         task.assignees = [User.query.get(int(id)) for id in request.form.getlist('assignees')]
         task.observers = [User.query.get(int(id)) for id in request.form.getlist('observers')]
         db.session.commit()
+
+        # Send email notification to observers
+        send_updatedtask_notification(task, task.observers)
         flash('Task updated successfully', 'success')
         return redirect(url_for('dashboard'))
-    employees = User.query.filter_by(role='employee').all()
-    admins = User.query.filter_by(role='admin').all()
+    
+    employees = User.query.all()
+    admins = User.query.all()
     return render_template('edit_task.html', task=task, employees=employees, admins=admins)
 
 @app.route('/add_task', methods=['GET', 'POST'])
 @login_required
 def add_task():
-    if current_user.role in ['admin', 'superadmin','employee']:
-        employees = User.query.filter_by(role='employee').all()
-        admins = User.query.filter_by(role='admin').all()
+    if current_user.role in ['admin', 'superadmin', 'employee']:
+        employees = User.query.all()
+        admins = User.query.all()
         if request.method == 'POST':
             title = request.form['title']
             description = request.form['description']
@@ -309,7 +356,8 @@ def add_task():
                 end_date=end_date, 
                 priority=priority,
                 assignees=assignees,
-                observers=observers
+                observers=observers,
+                creator_id=current_user.id  # Set the creator_id to the currently logged-in user's id
             )
             db.session.add(new_task)
             db.session.commit()
@@ -495,8 +543,8 @@ def admin_edit_employee(employee_id):
 @login_required
 def admin_add_task():
     if current_user.role in ['admin']:
-        employees = User.query.filter_by(role='employee').all()
-        admins = User.query.filter_by(role='admin').all()
+        employees = User.query.all()
+        admins = User.query.all()
         if request.method == 'POST':
             title = request.form['title']
             description = request.form['description']
@@ -545,10 +593,13 @@ def admin_edit_task(task_id):
         task.assignees = [User.query.get(int(id)) for id in request.form.getlist('assignees')]
         task.observers = [User.query.get(int(id)) for id in request.form.getlist('observers')]
         db.session.commit()
+
+        # Send email notification to assignees
+        send_updatedtask_notification(task, task.observers)
         flash('Task updated successfully', 'success')
         return redirect(url_for('dashboard'))
-    employees = User.query.filter_by(role='employee').all()
-    admins = User.query.filter_by(role='admin').all()
+    employees = User.query.all()
+    admins = User.query.all()
     return render_template('admin_edit_task.html', task=task, employees=employees, admins=admins)
 
 
@@ -656,12 +707,15 @@ def emp_edit_task(task_id):
         task.assignees = [User.query.get(int(id)) for id in request.form.getlist('assignees')]
         task.observers = [User.query.get(int(id)) for id in request.form.getlist('observers')]
         db.session.commit()
+
+        # Send email notification to assignees
+        send_updatedtask_notification(task, task.observers)
+        
         flash('Task updated successfully', 'success')
         return redirect(url_for('dashboard'))
     employees = User.query.filter_by(role='employee').all()
     admins = User.query.filter_by(role='admin').all()
     return render_template('emp_edit_task.html', task=task, employees=employees, admins=admins)
-
 
 
 #######################################################KANBAN############################################
@@ -774,6 +828,13 @@ def add_lead():
             )
             db.session.add(new_lead)
             db.session.commit()
+
+            # Send email to all users
+            users = User.query.all()
+            recipients = [user.email for user in users]
+            email_body = f"New lead added:\nClient: {new_lead.client}\nPhone: {new_lead.phone_no}\nEmail: {new_lead.email}\nDetails: {new_lead.details}"
+            lead_email(subject="New Lead Added", recipients=recipients, body=email_body)
+
             flash('Lead added successfully!')
             return redirect(url_for('leads'))
         except Exception as e:
@@ -786,24 +847,35 @@ def add_lead():
 def edit_lead(id):
     lead = Lead.query.get_or_404(id)
     if request.method == 'POST':
-        # Convert date strings to date objects
-        first_call_date = datetime.strptime(request.form.get('first_call'), '%Y-%m-%d').date()
-        follow_up_date = datetime.strptime(request.form.get('follow_up'), '%Y-%m-%d').date()
-        
-        lead.client = request.form['client']
-        lead.phone_no = request.form['phone_no']
-        lead.linkedin = request.form.get('linkedin')
-        lead.email = request.form.get('email')
-        lead.website = request.form.get('website')
-        lead.requirements = request.form.get('requirements')
-        lead.platform = request.form.get('platform')
-        lead.first_call = first_call_date
-        lead.follow_up = follow_up_date
-        lead.details = request.form.get('details')
-        db.session.commit()
-        flash('Lead updated successfully!')
-        return redirect(url_for('leads'))
+        try:
+            # Convert date strings to date objects
+            first_call_date = datetime.strptime(request.form.get('first_call'), '%Y-%m-%d').date()
+            follow_up_date = datetime.strptime(request.form.get('follow_up'), '%Y-%m-%d').date()
+            
+            lead.client = request.form['client']
+            lead.phone_no = request.form['phone_no']
+            lead.linkedin = request.form.get('linkedin')
+            lead.email = request.form.get('email')
+            lead.website = request.form.get('website')
+            lead.requirements = request.form.get('requirements')
+            lead.platform = request.form.get('platform')
+            lead.first_call = first_call_date
+            lead.follow_up = follow_up_date
+            lead.details = request.form.get('details')
+            db.session.commit()
+
+            # Send email to admin and superadmin users
+            admins = User.query.filter(User.role.in_(['admin', 'superadmin'])).all()
+            recipients = [user.email for user in admins]
+            email_body = f"Lead updated:\nClient: {lead.client}\nPhone: {lead.phone_no}\nEmail: {lead.email}\nDetails: {lead.details}"
+            lead_email(subject="Lead Updated", recipients=recipients, body=email_body)
+
+            flash('Lead updated successfully!')
+            return redirect(url_for('leads'))
+        except Exception as e:
+            flash(f'Error updating lead: {str(e)}')
     return render_template('add_lead.html', lead=lead)
+
 @app.route('/delete_lead/<int:id>')
 @login_required
 def delete_lead(id):
@@ -1033,7 +1105,7 @@ def apply_leave():
         db.session.commit()
 
         # Send email to admin
-        admin_email = "vinit.s.narkhede@gmail.com"  # Replace with admin email
+        admin_email = "digifalx.head@gmail.com"  # Replace with admin email
         msg = Message(
             subject=f"New Leave Request from {current_user.username}",
             recipients=[admin_email],
@@ -1090,7 +1162,7 @@ def schedule():
 
         # Send email notification
         msg = Message('Meeting Scheduled: ' + title,
-                      sender='vinit.s.narkhede@gmail.com',
+                      sender='digifalx.head@gmail.com',
                       recipients=attendees)
         msg.body = f'''
         Meeting Details:
