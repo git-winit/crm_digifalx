@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login</title>
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet">
+    <style>
+        body {
+            margin-bottom: 0;
+            background-color: #0fa3e8;
+            font-family: 'Arial', sans-serif;
+        }
+
+        .background-radial-gradient {
+            background-image: radial-gradient(650px circle at 0% 0%, 
+                #B3E5FC 15%, 
+                #81D4FA 35%, 
+                #4FC3F7 75%, 
+                #29B6F6 80%, 
+                transparent 100%),
+              radial-gradient(1250px circle at 100% 100%, 
+                #03A9F4 15%, 
+                #039BE5 35%, 
+                #0288D1 75%, 
+                #0277BD 80%, 
+                transparent 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+        }
+
+        #radius-shape-1, #radius-shape-2 {
+            position: absolute;
+            overflow: hidden;
+            background: radial-gradient(#0288D1, #03A9F4);
+            z-index: 0;
+        }
+
+        #radius-shape-1 {
+            height: 220px;
+            width: 220px;
+            top: -60px;
+            left: -130px;
+        }
+
+        #radius-shape-2 {
+            border-radius: 38% 62% 63% 37% / 70% 33% 67% 30%;
+            bottom: -60px;
+            right: -110px;
+            width: 300px;
+            height: 300px;
+        }
+
+        .bg-glass {
+            background-color: hsla(0, 0%, 100%, 0.9) !important;
+            backdrop-filter: saturate(200%) blur(25px);
+            border-radius: 1rem;
+        }
+
+        .form-outline {
+            position: relative;
+            margin-bottom: 1.5rem;
+        }
+
+        .form-outline input {
+            padding: 1rem 1rem 0.5rem;
+            font-size: 1rem;
+            background: transparent;
+            border: 1px solid #ced4da;
+            border-radius: 0.25rem;
+        }
+
+        .form-outline .form-label {
+            position: absolute;
+            top: 0.5rem;
+            left: 1rem;
+            pointer-events: none;
+            transition: all 0.2s ease-in-out;
+            background-color: hsla(0, 0%, 100%, 0.9);
+            padding: 0 0.25rem;
+            color: #495057;
+        }
+
+        .form-outline input:focus ~ .form-label,
+        .form-outline input:not(:placeholder-shown) ~ .form-label {
+            top: -0.75rem;
+            left: 0.75rem;
+            font-size: 0.85rem;
+            color: #0fa3e8;
+        }
+
+        .btn-primary {
+            background-color: #0fa3e8;
+            border-color: #0fa3e8;
+        }
+
+        .btn-primary:hover {
+            background-color: #0d92d0;
+            border-color: #0d92d0;
+        }
+    </style>
+</head>
+<body>
+    <section class="background-radial-gradient overflow-hidden">
+        <div class="container px-4 py-5 px-md-5 text-center text-lg-start my-5">
+            <div class="row gx-lg-5 align-items-center mb-5">
+                <div class="col-lg-6 mb-5 mb-lg-0" style="z-index: 10">
+                    <h1 class="my-5 display-5 fw-bold ls-tight" style="color: hsl(218, 81%, 95%)">
+                        Welcome Back! <br />
+                        <span style="color: hsl(0, 0%, 100%)"> Login</span>
+                    </h1>
+                </div>
+                <div class="col-lg-6 mb-5 mb-lg-0 position-relative">
+                    <div id="radius-shape-1" class="position-absolute rounded-circle shadow-5-strong"></div>
+                    <div id="radius-shape-2" class="position-absolute shadow-5-strong"></div>
+
+                    <div class="card bg-glass">
+                        <div class="card-body px-4 py-5 px-md-5">
+                            <form action="{{ url_for('login') }}" method="POST">
+                                <!-- Email input -->
+                                <div class="form-outline mb-4">
+                                    <input type="email" name="email" id="email" class="form-control" required />
+                                    <label class="form-label" for="email">Email</label>
+                                </div>
+
+                                <!-- Password input -->
+                                <div class="form-outline mb-4">
+                                    <input type="password" name="password" id="password" class="form-control" required />
+                                    <label class="form-label" for="password">Password</label>
+                                </div>
+
+                                <!-- Submit button -->
+                                <button type="submit" class="btn btn-primary btn-block mb-4">
+                                    Login
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>

@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Superadmin Dashboard</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+  <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+  <style>
+    body {
+      font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
+      background-color: #edecf7;
+      background-image: url(/static/bg.jpg);
+    }
+    @media (min-width: 991.98px) {
+      main {
+        padding-left: 240px;
+      }
+    }
+
+    .sidebar {
+      position: fixed;
+      top: 0;
+      bottom: 0;
+      left: 0;
+      padding: 58px 0 0;
+      box-shadow: 0 2px 5px 0 rgba(182, 197, 235, 0.05), 0 2px 10px 0 rgba(2, 29, 43, 0.05);
+      width: 240px;
+      z-index: 600;
+    }
+
+    @media (max-width: 991.98px) {
+      .sidebar {
+        width: 100%;
+      }
+    }
+    .sidebar .active {
+      border-radius: 5px;
+      box-shadow: 0 2px 5px 0 rgb(0 0 0 / 16%), 0 2px 10px 0 rgb(0 0 0 / 12%);
+    }
+
+    .sidebar-sticky {
+      position: relative;
+      top: 0;
+      height: calc(100vh - 48px);
+      padding-top: 0.5rem;
+      overflow-x: hidden;
+      overflow-y: auto;
+    }
+
+    .profile-pic {
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+    }
+
+    .card {
+      background-color: #fff;
+      border: none;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    .card-title {
+      font-size: 1.2rem;
+      font-weight: bold;
+    }
+
+    .card-text {
+      color: #6c757d;
+    }
+
+    .card-img-top {
+      width: 200px;
+      height: 200px;
+      object-fit: cover;
+      margin: auto;
+    }
+
+    .profile-pic {
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      margin-right: 5px;
+    }
+  </style>
+</head>
+<body>
+  <!--Main Navigation-->
+  <header>
+    <!-- Sidebar -->
+    <nav id="sidebarMenu" class="collapse d-lg-block sidebar collapse " style="background-color: black; color: #ffffff;">
+      <div class="position-sticky">
+        <div class="list-group list-group-flush mx-3 mt-4">
+          <a href="{{ url_for('dashboard') }}" class="list-group-item list-group-item-action py-2 ripple" aria-current="true" style="background-color: black; color: #ffffff;">
+            <i class="fas fa-tachometer-alt fa-fw me-3"></i><span>Dashboard</span>
+          </a>
+          <a href="{{ url_for('super_userlist') }}" class="list-group-item list-group-item-action py-2 ripple" style="background-color: black; color: #ffffff;">
+            <i class="fas fa-users fa-fw me-3"></i><span>Users</span>
+          </a>
+          <a href="{{ url_for('tasks') }}" class="list-group-item list-group-item-action py-2 ripple" style="background-color: black; color: #ffffff;">
+            <i class="fas fa-tasks fa-fw me-3"></i><span>Tasks</span>
+          </a>
+          <a href="{{ url_for('kanban_board') }}" class="list-group-item list-group-item-action py-2 ripple" style="background-color: black; color: #ffffff;">
+            <i class="fas fa-columns fa-fw me-3"></i><span>Kanban</span>
+          </a>
+          <a href="{{ url_for('calendar') }}" class="list-group-item list-group-item-action py-2 ripple" style="background-color: black; color: #ffffff;">
+            <i class="fas fa-calendar-alt fa-fw me-3"></i><span>Calendar</span>
+          </a>
+          <a href="{{ url_for('admin_leave') }}" class="list-group-item list-group-item-action py-2 ripple" style="background-color: black; color: #ffffff;">
+            <i class="fas fa-user-check fa-fw me-3"></i><span>Leave</span>
+          </a>
+          <a href="{{ url_for('view_attendance') }}" class="list-group-item list-group-item-action py-2 ripple" style="background-color: black; color: #ffffff;">
+            <i class="fas fa-user-check fa-fw me-3"></i><span>Attendance</span>
+          </a>
+          <a href="{{ url_for('leads') }}" class="list-group-item list-group-item-action py-2 ripple" style="background-color: black; color: #ffffff;">
+            <i class="fas fa-bullhorn fa-fw me-3"></i><span>Leads</span>
+          </a>
+        </div>
+      </div>
+    </nav>
+    <!-- Sidebar -->
+
+    <!-- Navbar -->
+    <nav id="main-navbar" class="navbar navbar-expand-lg navbar-light fixed-top">
+      <div class="container-fluid">
+        <!-- Toggle button -->
+        <button class="navbar-toggler" type="button" data-toggle="collapse" style="color: #e7e7eb;" data-target="#sidebarMenu" aria-controls="sidebarMenu" aria-expanded="false" aria-label="Toggle navigation">
+          <i class="fas fa-bars"></i>
+        </button>
+
+        <!-- Brand -->
+        <a class="navbar-brand" href="#" style=" color: #e7e9fc; padding-left: 2px; padding-right: 2px ; width: 13%; text-align: center;">
+          <img src="/static/logo.png" height="25" alt="MDB Logo" style="background-color: black; height: 50px; width:50px"
+            loading="lazy"  /> 
+        </a>
+        <!-- Right links -->
+        <ul class="navbar-nav ms-auto d-flex flex-row">
+          <!-- Avatar -->
+          <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle hidden-arrow d-flex align-items-center" href="#" id="navbarDropdownMenuLink" role="button" data-toggle="dropdown" aria-expanded="false">
+              <img src="{{ url_for('static', filename='profile_pics/' + current_user.profile_pic) }}" class="rounded-circle" height="35" width="35" alt="Avatar" loading="lazy" />
+            </a>
+            <ul class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdownMenuLink">
+              <li><a class="dropdown-item" href="#">My profile</a></li>
+              <li><a class="dropdown-item" href="#">Settings</a></li>
+              <li><a class="dropdown-item" href="#">Logout</a></li>
+            </ul>
+          </li>
+        </ul>
+      </div>
+    </nav>
+    <!-- Navbar -->
+  </header>
+  <!--Main Navigation-->
+
+  <!--Main layout-->
+  <main style="margin-top: 58px; margin-right: 30px; margin-left: 30px;">
+    <div class="container pt-4  pb-3 pr-3 mr-2" style="  width: 100%; background-color: #e7e9fc;">
+      <h1 style="text-align: center; color: #08082f;">Edit Task</h1>
+      <form action="{{ url_for('edit_task', task_id=task.id) }}" method="POST">
+        <div class="form-group">
+          <label for="title">Title</label>
+          <input type="text" name="title" class="form-control" value="{{ task.title }}" required>
+        </div>
+        <div class="form-group">
+            <label for="description">Description</label>
+            <textarea name="description" class="form-control">{{ task.description }}</textarea>
+        </div>
+        <div class="form-row">
+          <div class="form-group col-md-4">
+            <label for="start_date">Start Date</label>
+            <input type="date" name="start_date" class="form-control" value="{{ task.start_date.strftime('%Y-%m-%d') }}" required>
+          </div>
+          <div class="form-group col-md-4">
+            <label for="end_date">End Date</label>
+            <input type="date" name="end_date" class="form-control" value="{{ task.end_date.strftime('%Y-%m-%d') }}" required>
+          </div>
+          <div class="form-group col-md-4">
+            <label for="priority">Priority</label>
+            <select name="priority" class="form-control" required>
+              <option value="high" {% if task.priority == 'high' %}selected{% endif %}>High</option>
+              <option value="medium" {% if task.priority == 'medium' %}selected{% endif %}>Medium</option>
+              <option value="low" {% if task.priority == 'low' %}selected{% endif %}>Low</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group col-md-6">
+            <label for="assignees">Assignees</label>
+            <select multiple name="assignees" class="form-control assignees-select" style="width: 100%;">
+              {% for employee in employees %}
+              <option value="{{ employee.id }}" data-img-src="{{ url_for('static', filename='profile_pics/' + employee.profile_pic) }}" {% if employee in task.assignees %}selected{% endif %}>
+                {{ employee.username }}
+              </option>
+              {% endfor %}
+            </select>
+          </div>
+          <div class="form-group col-md-6">
+            <label for="observers">Observers</label>
+            <select multiple name="observers" class="form-control observers-select" style="width: 100%;">
+              {% for admin in admins %}
+              <option value="{{ admin.id }}" data-img-src="{{ url_for('static', filename='profile_pics/' + admin.profile_pic) }}" {% if admin in task.observers %}selected{% endif %}>
+                {{ admin.username }}
+              </option>
+              {% endfor %}
+            </select>
+          </div>
+        </div>
+        <button type="submit" class="btn btn-success" style="background-color: #08082f;">Update Task</button>
+        
+      </form>
+    </div>
+  </main>
+  <!--Main layout-->
+
+  <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+  <script>
+    $(document).ready(function() {
+      function formatState(state) {
+        if (!state.id) {
+          return state.text;
+        }
+        var $state = $(
+          '<span><img src="' + $(state.element).data('img-src') + '" class="profile-pic" /> ' + state.text + '</span>'
+        );
+        return $state;
+      }
+
+      $('.assignees-select').select2({
+        templateResult: formatState,
+        templateSelection: formatState
+      });
+
+      $('.observers-select').select2({
+        templateResult: formatState,
+        templateSelection: formatState
+      });
+    });
+  </script>
+</body>
+</html>

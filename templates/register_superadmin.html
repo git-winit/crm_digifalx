@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register Superadmin</title>
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet">
+    <style>
+        .background-radial-gradient {
+            background-color: #E1F5FE;
+            background-image: radial-gradient(650px circle at 0% 0%, 
+                #B3E5FC 15%, 
+                #81D4FA 35%, 
+                #4FC3F7 75%, 
+                #29B6F6 80%, 
+                transparent 100%),
+              radial-gradient(1250px circle at 100% 100%, 
+                #03A9F4 15%, 
+                #039BE5 35%, 
+                #0288D1 75%, 
+                #0277BD 80%, 
+                transparent 100%);
+        }
+
+        #radius-shape-1 {
+            height: 220px;
+            width: 220px;
+            top: -60px;
+            left: -130px;
+            background: radial-gradient(#0288D1, #03A9F4);
+            overflow: hidden;
+        }
+
+        #radius-shape-2 {
+            border-radius: 38% 62% 63% 37% / 70% 33% 67% 30%;
+            bottom: -60px;
+            right: -110px;
+            width: 300px;
+            height: 300px;
+            background: radial-gradient(#0288D1, #03A9F4);
+            overflow: hidden;
+        }
+
+        .bg-glass {
+            background-color: hsla(0, 0%, 100%, 0.9) !important;
+            backdrop-filter: saturate(200%) blur(25px);
+        }
+    </style>
+</head>
+<body>
+    <section class="background-radial-gradient overflow-hidden">
+        <div class="container px-4 py-5 px-md-5 text-center text-lg-start my-5">
+            <div class="row gx-lg-5 align-items-center mb-5">
+                <div class="col-lg-6 mb-5 mb-lg-0" style="z-index: 10">
+                    <h1 class="my-5 display-5 fw-bold ls-tight" style="color: hsl(218, 81%, 95%)">
+                        Register Superadmin <br />
+                        <span style="color: #1D3557">Join Us Now</span>
+                    </h1>
+                </div>
+                <div class="col-lg-6 mb-5 mb-lg-0 position-relative">
+                    <div id="radius-shape-1" class="position-absolute rounded-circle shadow-5-strong"></div>
+                    <div id="radius-shape-2" class="position-absolute shadow-5-strong"></div>
+
+                    <div class="card bg-glass">
+                        <div class="card-body px-4 py-5 px-md-5">
+                            <form action="{{ url_for('register_superadmin') }}" method="POST" enctype="multipart/form-data">
+                                <!-- Username input -->
+                                <div class="form-outline mb-4">
+                                    <input type="text" name="username" id="username" class="form-control" required />
+                                    <label class="form-label" for="username">Username</label>
+                                </div>
+
+                                <!-- Email input -->
+                                <div class="form-outline mb-4">
+                                    <input type="email" name="email" id="email" class="form-control" required />
+                                    <label class="form-label" for="email">Email</label>
+                                </div>
+
+                                <!-- Password input -->
+                                <div class="form-outline mb-4">
+                                    <input type="password" name="password" id="password" class="form-control" required />
+                                    <label class="form-label" for="password">Password</label>
+                                </div>
+
+                                <!-- Joining Date input -->
+                                <div class="form-outline mb-4">
+                                    <input type="date" name="joining_date" id="joining_date" class="form-control" required />
+                                    <label class="form-label" for="joining_date">Joining Date</label>
+                                </div>
+
+                                <!-- Profile Picture input -->
+                                <div class="form-outline mb-4">
+                                    <input type="file" name="profile_pic" id="profile_pic" class="form-control-file" />
+                                    <label class="form-label" for="profile_pic">Profile Picture</label>
+                                </div>
+
+                                <!-- Submit button -->
+                                <button type="submit" class="btn btn-primary btn-block mb-4" >
+                                    Register
+                                </button>
+
+                                <!-- Back to Login button -->
+                                <a href="{{ url_for('login') }}" class="btn btn-secondary btn-block mb-4">
+                                    Back to Login
+                                </a>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>

@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Superadmin Dashboard</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+  <style>
+    body {
+        font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
+      background-color: #edecf7;
+      background-image: url(/static/bg.jpg);
+      
+    }
+    @media (min-width: 991.98px) {
+      main {
+        padding-left: 240px;
+      }
+    }
+
+    /* Sidebar */
+    .sidebar {
+      position: fixed;
+      top: 0;
+      bottom: 0;
+      left: 0;
+      padding: 58px 0 0; /* Height of navbar */
+      box-shadow: 0 2px 5px 0 rgba(182, 197, 235, 0.05), 0 2px 10px 0 rgba(2, 29, 43, 0.05);
+      width: 240px;
+      z-index: 600;
+      
+    }
+
+    @media (max-width: 991.98px) {
+      .sidebar {
+        width: 100%;
+      }
+    }
+    .sidebar .active {
+      border-radius: 5px;
+      box-shadow: 0 2px 5px 0 rgb(0 0 0 / 16%), 0 2px 10px 0 rgb(0 0 0 / 12%);
+    }
+
+    .sidebar-sticky {
+      position: relative;
+      top: 0;
+      height: calc(100vh - 48px);
+      padding-top: 0.5rem;
+      overflow-x: hidden;
+      overflow-y: auto; /* Scrollable contents if viewport is shorter than content. */
+    }
+
+    .table-avatar {
+      width: 45px;
+      height: 45px;
+      object-fit: cover;
+    }
+    .card-custom {
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        .card-custom img {
+            width: 50px;
+            height: 50px;
+        }
+        .card-custom h2 {
+            margin: 0;
+            font-size: 24px;
+            color: #333;
+        }
+        .card-custom p {
+            margin: 10px 0;
+            color: #666;
+        }
+        .badge-button {
+            display: inline-block;
+            padding: 10px 20px;
+            border-radius: 5px;
+            background-color: #e7e9fc;
+            color: #5a67d8;
+            text-decoration: none;
+        }
+        .table-wrapper-scroll-y {
+            display: block;
+            max-height: 200px; /* Adjust the height as needed */
+            overflow-y: auto;
+        }
+  </style>
+</head>
+<body>
+  <!--Main Navigation-->
+  <header>
+    <!-- Sidebar -->
+    <nav id="sidebarMenu" class="collapse d-lg-block sidebar collapse " style="background-color: black;">
+      <div class="position-sticky" >
+        <div class="list-group list-group-flush mx-3 mt-4" style="background-color: black; color: #e7e9fc;" >
+          <a href="{{ url_for('dashboard') }}" class="list-group-item list-group-item-action py-2 ripple" aria-current="true" style="background-color: black; color: #e7e9fc;">
+            <i class="fas fa-tachometer-alt fa-fw me-3"></i><span>Dashboard</span>
+          </a>
+          <a href="{{ url_for('emp_userlist') }}" class="list-group-item list-group-item-action py-2 ripple" style="background-color: black; color: #e7e9fc;">
+            <i class="fas fa-users fa-fw me-3"></i><span>Users</span>
+          </a>
+          <a href="{{ url_for('emp_tasks') }}" class="list-group-item list-group-item-action py-2 ripple" style="background-color: black; color: #e7e9fc;">
+            <i class="fas fa-tasks fa-fw me-3"></i><span>Tasks</span>
+          </a>
+          <a href="{{ url_for('kanban_board') }}" class="list-group-item list-group-item-action py-2 ripple" style="background-color: black; color: #e7e9fc;">
+            <i class="fas fa-columns fa-fw me-3"></i><span>Kanban</span>
+          </a>
+          <a href="{{ url_for('calendar') }}" class="list-group-item list-group-item-action py-2 ripple" style="background-color: black; color: #e7e9fc;">
+            <i class="fas fa-calendar-alt fa-fw me-3"></i><span>Calendar</span>
+          </a>
+          <a href="{{ url_for('leave') }}" class="list-group-item list-group-item-action py-2 ripple" style="background-color: black; color: #e7e9fc;">
+            <i class="fas fa-plane-departure fa-fw me-3"></i><span>Leave</span>
+          </a>
+          <a href="{{ url_for('attendance') }}" class="list-group-item list-group-item-action py-2 ripple" style="background-color: black; color: #e7e9fc;">
+            <i class="fas fa-clipboard-check fa-fw me-3"></i><span>Attendance</span>
+          </a>
+          <a href="{{ url_for('emp_attendance') }}" class="list-group-item list-group-item-action py-2 ripple" style="background-color: black; color: #e7e9fc;">
+            <i class="fas fa-user-check fa-fw me-3"></i><span>My Attendance</span>
+          </a>
+          <a href="{{ url_for('leads') }}" class="list-group-item list-group-item-action py-2 ripple" style="background-color: black; color: #e7e9fc;">
+            <i class="fas fa-bullhorn fa-fw me-3"></i><span>Leads</span>
+          </a>
+          
+        </div>
+      </div>
+    </nav>
+    <!-- Sidebar -->
+
+    <!-- Navbar -->
+    <nav id="main-navbar" class="navbar navbar-expand-lg navbar-light  fixed-top">
+      <!-- Container wrapper -->
+      <div class="container-fluid">
+        <!-- Toggle button -->
+        <button class="navbar-toggler" style="color: #e7e7eb;" type="button" data-toggle="collapse" data-target="#sidebarMenu"
+          aria-controls="sidebarMenu" aria-expanded="false" aria-label="Toggle navigation">
+          <i class="fas fa-bars"></i>
+        </button>
+
+        <!-- Brand -->
+        <a class="navbar-brand" href="#" style=" color: #e7e9fc; padding-left: 2px; padding-right: 2px ; width: 13%; text-align: center;">
+          <img src="/static/logo.png" height="25" alt="MDB Logo" style="background-color: black; height: 50px; width:50px"
+            loading="lazy"  /> 
+        </a>
+        <!-- Right links -->
+        <ul class="navbar-nav ms-auto d-flex flex-row">
+           <!-- Avatar -->
+          <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle hidden-arrow d-flex align-items-center" href="#" id="navbarDropdownMenuLink"
+              role="button" data-toggle="dropdown" aria-expanded="false">
+              <img src="{{ url_for('static', filename='profile_pics/' + current_user.profile_pic) }}" class="rounded-circle" height="35" width="35"
+                alt="Avatar" loading="lazy" />
+            </a>
+            <ul class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdownMenuLink">
+              <li><a class="dropdown-item" href="{{ url_for('profile') }}">My profile</a></li>
+              <li><a class="dropdown-item" href="{{ url_for('logout') }}">Logout</a></li>
+            </ul>
+          </li>
+        </ul>
+      </div>
+      <!-- Container wrapper -->
+    </nav>
+    <!-- Navbar -->
+  </header>
+  <!--Main Navigation-->
+
+  <!--Main layout-->
+  <main style="margin-top: 58px;">
+    <div class="container pt-4">
+        <div class="container mt-5 mb-5">
+            <div class="container">
+              <div class="row">
+                  <div class="col-12 col-md-6">
+                      <div class="card-custom">
+                          <h2>Welcome  {{ user.username }}! 🎉</h2>
+                          <p>Good Morning </p>
+                      </div>
+                  </div>
+                  <div class="col-6 col-md-3">
+                      <div class="card-custom text-center">
+                          <h2><b>{{ task_count_total }}+ </b></h2>
+                          <p>Total Tasks</p>
+
+                      </div>
+                  </div>
+                  <div class="col-6 col-md-3">
+                      <div class="card-custom text-center">
+                          <h2><b>{{ user_count_total }}+ </b></h2>
+                          <p>Total Users</p>
+                          
+                      </div>
+                  </div>
+              </div>
+          </div>
+            <div class="table-responsive">
+              <table class="table" style="background-color: #ffffff;">
+                <thead>
+                  <tr>
+                    <th>PROJECT</th>
+                    <th>USERS</th>
+                    <th>STATUS</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {% for task in tasks %}
+                    <tr>
+                      <td data-label="PROJECT">
+                        <div class="icon-text">
+                          <h4>  <i class="{% if task.priority == 'high' %}fas fa-exclamation-circle text-danger{% elif task.priority == 'medium' %}fas fa-exclamation-circle text-warning{% else %}fas fa-exclamation-circle text-success{% endif %}"></i>
+                         {{ task.title }} </h4>
+                        </div>
+                      </td>
+                      <td data-label="USERS">
+                        {% for user in task.assignees %}
+                          <img src="{{ url_for('static', filename='profile_pics/' ~ user.profile_pic) }}" class="rounded-circle" height="22" alt="{{ user.username }}" loading="lazy" />
+                        {% endfor %}
+                      </td>
+                      <td data-label="STATUS">
+                        <span class="badge {% if task.status == 'Active' %}status-active{% elif task.status == 'Completed' %}status-completed{% elif task.status == 'Scheduled' %}status-scheduled{% else %}status-pending{% endif %}">
+                          {{ task.status }}
+                        </span>
+                      </td>
+                      
+                    </tr>
+                  {% endfor %}
+                </tbody>
+              </table>
+            </div>
+
+            
+            <!-- Today's Meetings Table -->
+             
+            <div class="table-wrapper-scroll-y my-custom-scrollbar mt-5">
+              <table class="table align-middle mb-0 bg-white">
+                <thead class="bg-white">
+                  <tr>
+                    <th>Title</th>
+                    <th>Start Time</th>
+                    <th>End Time</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {% for meeting in meetings_today %}
+                  <tr>
+                    <td>{{ meeting.title }}</td>
+                    <td>{{ meeting.start_time }}</td>
+                    <td>{{ meeting.end_time }}</td>
+                  </tr>
+                  {% endfor %}
+                </tbody>
+              </table>
+            </div>
+            
+            <!-- End Today's Meetings Table -->
+
+        </div>
+    </div>
+    </div>
+  </main>
+  <!--Main layout-->
+
+  <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+</body>
+</html>
